@@ -1,28 +1,37 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import styled from "styled-components"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-const IndexPage = ({ data }) => (
+const BlogLink = styled(Link)`
+  text-decoration: none;
+`
 
+const BlogTitle = styled.h3`
+  margin-bottom: 20px;
+  color: blue;
+`
+
+const IndexPage = ({ data }) => (
   <Layout>
     <SEO title="Home" />
     <div>
       <h1>Developer Thoughts</h1>
       <h4>{data.allMarkdownRemark.totalCount}</h4>
-      {
-        data.allMarkdownRemark.edges.map(({ node }) => {
-          return (
-            <div key={node.id}>
-              <span>
+      {data.allMarkdownRemark.edges.map(({ node }) => {
+        return (
+          <div key={node.id}>
+            <BlogLink to={node.fields.slug}>
+              <BlogTitle>
                 {node.frontmatter.title} - {node.frontmatter.date}
-                <p>{node.excerpt}</p>
-              </span>
-            </div>
-          )
-        })
-      }
+              </BlogTitle>
+            </BlogLink>
+            <p>{node.excerpt}</p>
+          </div>
+        )
+      })}
     </div>
     <Link to="/page-2/">Go to page 2</Link>
   </Layout>
@@ -31,12 +40,15 @@ const IndexPage = ({ data }) => (
 export default IndexPage
 
 export const query = graphql`
-  query MyQuery {
-    allMarkdownRemark {
+  query {
+    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
       totalCount
       edges {
         node {
           id
+          fields {
+            slug
+          }
           frontmatter {
             date
             description
